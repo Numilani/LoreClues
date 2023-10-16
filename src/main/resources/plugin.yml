@@ -1,0 +1,4 @@
+name: LoreClues
+version: '${version}'
+main: me.numilani.loreclues.LoreClues
+api-version: '1.20'
