@@ -1,10 +1,5 @@
 package me.numilani.loreclues;
 
-import cloud.commandframework.annotations.AnnotationParser;
-import cloud.commandframework.execution.CommandExecutionCoordinator;
-import cloud.commandframework.meta.SimpleCommandMeta;
-import cloud.commandframework.paper.PaperCommandManager;
-import com.bergerkiller.bukkit.common.cloud.CloudSimpleHandler;
 import com.bergerkiller.bukkit.common.config.FileConfiguration;
 import me.numilani.loreclues.commands.ClueCommands;
 import me.numilani.loreclues.data.IDataSourceConnector;
@@ -12,13 +7,18 @@ import me.numilani.loreclues.data.SqliteDataSourceConnector;
 import me.numilani.loreclues.listeners.HintListeners;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.incendo.cloud.annotations.AnnotationParser;
+import org.incendo.cloud.execution.ExecutionCoordinator;
+import org.incendo.cloud.meta.SimpleCommandMeta;
+import org.incendo.cloud.paper.LegacyPaperCommandManager;
+import org.incendo.cloud.paper.PaperCommandManager;
 
 import java.sql.SQLException;
 import java.util.function.Function;
 
 public final class LoreClues extends JavaPlugin {
 //    public CloudSimpleHandler cmdHandler = new CloudSimpleHandler();
-    public PaperCommandManager<CommandSender> cmdHandler;
+    public LegacyPaperCommandManager<CommandSender> cmdHandler;
     public AnnotationParser<CommandSender> cmdParser;
     public IDataSourceConnector dataSource;
 
@@ -41,12 +41,13 @@ public final class LoreClues extends JavaPlugin {
         }
 
         try {
-            cmdHandler = new PaperCommandManager<>(this, CommandExecutionCoordinator.simpleCoordinator(), Function.identity(), Function.identity());
+            cmdHandler = LegacyPaperCommandManager.createNative(this, ExecutionCoordinator.simpleCoordinator());
             cmdParser = new AnnotationParser<>(cmdHandler, CommandSender.class, parserParameters -> SimpleCommandMeta.empty());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
+        cmdParser.parse(new ClueCommands(this));
     }
 
     private void doPluginInit() {
