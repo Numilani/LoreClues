@@ -57,8 +57,10 @@ public class SqliteDataSourceConnector implements IDataSourceConnector{
 
     @Override
     public Clue getClue(String serializedLocation) throws SQLException {
-        var statement = conn.createStatement();
-        var x = statement.executeQuery("SELECT id, location, message from Clues");
+        var statement = conn.prepareStatement("SELECT id, location, message from Clues where location = ?");
+        statement.setString(1, serializedLocation);
+        var x = statement.executeQuery();
+
 
         while (x.next()){
             var clue = new Clue();
